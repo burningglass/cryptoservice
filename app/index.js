@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const app = require('express')();
-const { PORT = 4000, SALT = '#ha43-1', LOG_LEVEL, NODE_ENV } = process.env;
+const { PORT = 8080, SALT = '#ha43-1', LOG_LEVEL, NODE_ENV } = process.env;
 const algorithm = 'aes-192-cbc';
 const keylen = 24;
 
