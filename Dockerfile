@@ -16,4 +16,10 @@ RUN npm ci --only=production
 COPY . .
 
 EXPOSE 8080
-CMD [ "node", "index.js" ]
+#CMD [ "node", "index.js" ]
+
+i=1
+while [ "$i" -ne 0 ]
+do
+  sleep 10
+done
