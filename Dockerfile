@@ -13,7 +13,7 @@ COPY package*.json ./
 RUN npm ci --only=production
 
 # Bundle app source
-COPY ./app/* .
+COPY ./app/* /usr/src/app/
 
 EXPOSE 8080
 CMD [ "node", "index.js" ]
