@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const app = require('express')();
-const { PORT = 8080, SALT = '#ha43-1', LOG_LEVEL, NODE_ENV } = process.env;
+const { PORT = 8080, HOSTNAME = '0.0.0.0', SALT = '#ha43-1', LOG_LEVEL, NODE_ENV } = process.env;
 const algorithm = 'aes-192-cbc';
 const keylen = 24;
 
@@ -39,6 +39,9 @@ app.get('/decrypt', ({ query }, res) => {
   res.send(decrypt(query));
 });
 
-app.listen(PORT, () => {
-  console.log(`Listening on ${PORT}, LOG_LEVEL: ${LOG_LEVEL}, NODE_ENV: ${NODE_ENV}`);
+console.log("starting up");
+console.log(HOSTNAME);
+
+app.listen(PORT, HOSTNAME, () => {
+  console.log(`Listening on ${PORT}, ${HOSTNAME}, LOG_LEVEL: ${LOG_LEVEL}, NODE_ENV: ${NODE_ENV}`);
 });
