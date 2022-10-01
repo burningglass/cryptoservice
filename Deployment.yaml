@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cryptoservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cryptoservice
+  template:
+    metadata:
+      labels:
+        app: cryptoservice
+    spec:
+      containers:
+      - image: gcr.io/<PROJECT_ID>/cryptoservice:v0.0.1
+        imagePullPolicy: Always
+        name: main
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 5
