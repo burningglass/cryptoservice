@@ -1,19 +1,23 @@
-FROM node:16
+# Smallest official Node.js image compatible with dependencies
+#  (Alpine images not officially supported, use recent LTS version of an official image)
+FROM node:16.17.0-bullseye-slim
 
-# Create app directory
-WORKDIR /usr/src
+# Create app directory (see: https://www.pathname.com/fhs/pub/fhs-2.3.html#PURPOSE23)
+WORKDIR /usr/local/src
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# Package.json*.json specify NPM packages used by app
+# Package-lock.json stipulates specific versions of required packages
 # where available (npm@5+)
-COPY ./package*.json /usr/src/
+COPY package*.json /usr/local/src/
 
-#RUN npm install
-# If you are building your code for production
+# Option 1. Install for Production?, i.e. install strictly per package-lock.json, deleting node_modules beforehand
 RUN npm ci --only=production
 
-# Bundle app source
-COPY ./app/* /usr/src/app/
+# Option 2. Install only for Development?
+# RUN npm install
+
+# Install app source
+COPY ./app/* /usr/local/src/app/
 
 EXPOSE 8080
 CMD [ "node", "app/index.js" ]

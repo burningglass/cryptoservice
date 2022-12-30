@@ -4,12 +4,9 @@
   "description": "Cryptographic service to convert data from plaintext to encrypted form (and vice versa)",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node app/index.js"
   },
   "dependencies": {
     "express": "^4.17.1"
-  },
-  "scripts": {
-    "start": "node app/index.js"
   }
 }
