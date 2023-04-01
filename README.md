@@ -111,9 +111,9 @@ Under `%HOMEPATH%\projects\cryptoservice`:<br/>
 
 ## 5 Dockerize the app (in GCloud)
 
-### 5.1 Connect to GKE context in GCloud:
+### 5.1 Connect to K8s context in GCloud:
 
-![Connecting to GKE context](https://github.com/burningglass/registrationservicemeshsetup/blob/main/README.images/Picture1.png)
+![Connecting to K8s context](https://github.com/burningglass/registrationservicemeshsetup/blob/main/README.images/Picture1.png)
 
 ### 5.2 Connect to the K8s cluster:
 
@@ -151,7 +151,7 @@ The Docker build:
 
 `docker build -t gcr.io/[PROJECT_ID]/cryptoservice:v1.0.0 .` builds the container image:
 
-![Docker build](README.images/Picture7.png)
+![Docker build](README.images/Picture8.png)
 
 ### 5.8 Check the local (Docker) Registry
 
@@ -192,9 +192,9 @@ Note. `-it` (docker run switch) allocates a pseudo-TTY connected to the containe
 
 pseudo-TTY: A device that has the functions of a physical terminal without actually being one. Created by terminal emulators such as xterm<br/>
 
-While inside this container's filesystem:<br/>
+Now inside this container's filesystem:<br/>
 
-`ls` will reveal (alongside the folders of the base image reference by the Dockerfile) the (app)service folder copied into the image: `/app`<br/>
+`ls` reveals both folders of the base image (referenced by the Dockerfile) and the (app)service folder (the Dockerfile copied into the image): `/app`<br/>
 
 `exit` exits out of this container
 
@@ -227,6 +227,180 @@ Note. Deleting the image is also possible (as follows), but **don't** because it
 `docker image ls`<br/>
 `docker image rm <image id>`
 
+## 6 Deploy Crytoservice to K8s (in GCloud)
+
+### 6.1 Reconnect to K8s context in GCloud:
+
+![Connecting to K8s context](https://github.com/burningglass/registrationservicemeshsetup/blob/main/README.images/Picture1.png)
+
+### 6.2 Reconnect to the K8s cluster:
+
+![Connecting to K8s cluster](https://github.com/burningglass/registrationservicemeshsetup/blob/main/README.images/Picture2.png)
+
+![Connecting to K8s cluster](https://github.com/burningglass/registrationservicemeshsetup/blob/main/README.images/Picture3.png)
+
+### 6.3 Push the Docker image to Google Container Registry
+
+`docker push gcr.io/[PROJECT_ID]/cryptoservice:v1.0.0`
+
+### 6.4 Verify the image is in the Registry
+
+`gcloud container images list --repository gcr.io/[PROJECT_ID]`<br/>
+
+![Checking the Registry](https://github.com/burningglass/registrationservicemeshsetup/blob/main/README.images/Picture10.png)
+
+Or launch the 'Container Registry' service, by clicking the left-side service bar under the 'CI/CD' section:
+
+![Google Container Registry](https://github.com/burningglass/registrationservicemeshsetup/blob/main/README.images/Picture11.png)
+
+Note. You can see the active tag(s) for the uploaded image(s) with this command:
+
+`gcloud container images list-tags gcr.io/[PROJECT_ID]/cryptoservice`
+
+Note. You can see all information re: the above image using:
+
+`gcloud container images describe gcr.io/[PROJECT_ID]/cryptoservice:v1.0.0`
+
+Note. The above image can be deleted using:
+
+`gcloud container images delete gcr.io/[PROJECT_ID]/cryptoservice:v1.0.0`
+
+Note. It is possible to prepend specific repository identifiers to the end of Docker image tags (e.g. gcr.io/[PROJECT_ID]/[REPO_ID]/myapp:v1.0.0), in which case listing such images uploaded into Google Container Repository is possible with this command:
+
+`gcloud container images list --repository gcr.io/[PROJECT_ID]/[REPO_ID]`
+
+### 6.5 Review the available K8s Nodes
+
+To show general info about the whole cluster:
+
+`kubectl cluster-info`
+
+To show all Pods running across all namespaces (including the 'reserved' ones, note. some of these Pods comprise the Anthos(Istio) management layer):
+
+`kubectl get pods -A`
+
+Note. Nodes (that host the Pods) are automatically provisioned/ managed by GCloud K8s for this 'Autopilot' cluster.
+
+### 6.6 Create the 'Deployment' configuration as .yaml
+
+Back in the desktop environment where the source code is, add this new file to the root of the cryptoservice project:
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cryptoservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cryptoservice
+  template:
+    metadata:
+      labels:
+        app: cryptoservice
+    spec:
+      containers:
+      - image: gcr.io/[PROJECT_ID]/cryptoservice:v1.0.0
+        imagePullPolicy: Always
+        name: main
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 5
+```
+
+### 6.7 Create the 'Service' configuration as .yaml
+
+Back in the desktop environment where the source code is, add this new file to the root of the cryptoservice project:
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: cryptoservicesvc
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+  selector:
+    app: cryptoservice:
+  type: LoadBalancer
+```
+
+### 6.8 Commit and Push the new files to GitHub
+
+`git add Deployment.yaml`<br/>
+`git add Service.yaml`<br/>
+`git commit -m "Added K8s installation/config artefacts"`<br/>
+`git push`
+
+### 6.9 Git Pull the two files (above) into your GShell ~/projects/cryptoservice project folder
+
+Back in GCloud GShell:
+
+`git pull`
+
+![Pull latest additions in GShell](https://github.com/burningglass/registrationservicemeshsetup/blob/main/README.images/Picture12.png)
+
+### 6.10 Modify Deployment.yaml to set container image source location
+
+`vi Deployment.yaml`
+
+Override [PROJECT_ID] with specific GCloud project ID:
+
+![Setting the specific container image reference](https://github.com/burningglass/registrationservicemeshsetup/blob/main/README.images/Picture13.png)
+
+{ESCAPE} then : then wq then {RETURN}
+
+### 6.11 Install Deployment.yaml into K8s (in GCloud):
+
+`kubectl apply -f Deployment.yaml -n default`<br/>
+`kubectl get pods -n default`
+
+Note. -n specifies the K8s namespace (it's optional)
+
+The Deployment will create an initial Pod (initially it will be in 'ContainerCreating' state and eventually hit 'Running' state).
+
+### 6.12 Install Service.yaml into K8s (in GCloud):
+
+`kubectl apply -f Service.yaml -n default` <br/>
+`kubectl get services -n default`
+
+Note. -n specifies the K8s namespace (it's optional)
+
+The Service will create a LoadBalancer (initially in '<pending>' state, it will eventually show its (listening) EXTERNAL-IP)
+
+This LoadBalancer will direct all traffic into the Pod above
+
+### 6.13 Test the application hosted by K8s (in GCloud):
+
+`curl -G -i “http://external_ip_addr>/encrypt” -d "secret=5050" -d "message=hellothereworld"`
+
+### 6.14 Other K8s commands:
+
+To get information about running Pods (note. `-n` specifies the K8s namespace, i.e it's optional):
+
+`kubectl get pod -n default`
+
+The following will restart the Deployment, restarting containers (in individual Replica Pods) one-by-one (keeping the overall application as alive as possible):
+
+`kubectl rollout restart deployment -n default`
+
+### 6.15 Anthos(Istio) should be active
+
+This assumes the prerequisite steps were completed (see https://github.com/burningglass/registrationservicemeshsetup section 2)
+
+The following...<br/>
+`kubectl get pod -n default`<br/>
+...should reveal:
+
+![Pod is Anthos(Istio)-enabled, i.e. app and sidecar container both running](https://github.com/burningglass/registrationservicemeshsetup/blob/main/README.images/Picture14.png)
+
+'2/2' indicates two containers running inside the Pod:
+- the app
+- the Anthos(Istio) sidecar
+
+![Anthos(Istio) is now hooked into the cluster, its namespace and deployments](https://github.com/burningglass/registrationservicemeshsetup/blob/main/README.images/Picture15.png)
 
 
 
