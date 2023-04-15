@@ -2,11 +2,11 @@
 
 Simple Express service (Node.js encrypt/decrypt) demonstrating build, deployment and hosting of a simple *standalone* service in Kubernetes Engine (GCloud)
 
-*Important 1* Steps here are a prerequisite:
+**Important** Steps here are a prerequisite:
 
 [Registration Service Mesh Setup](https://github.com/burningglass/registrationservicemeshsetup)
 
-*Important 2* Familiarity with this project will ease tackling the more advanced service projects:
+Familiarity with this project will ease tackling the more advanced service projects:
 
 [Registration Store](https://github.com/burningglass/registrationstore)<br/>
 [Registration Web(GUI)](https://github.com/burningglass/registrationgui)
@@ -111,31 +111,31 @@ Under `%HOMEPATH%\projects\cryptoservice`:<br/>
 
 ## 4 Dockerize the app (in GCloud)
 
-### 4.1 Connect to K8s context in GCloud:
+### 4.1 Connect to K8s context in GCloud
 
 ![Connecting to K8s context](https://github.com/burningglass/registrationservicemeshsetup/blob/main/README.images/Picture1.png)
 
-### 4.2 Connect to the K8s cluster:
+### 4.2 Connect to the K8s cluster
 
 ![Connecting to the K8s cluster](https://github.com/burningglass/registrationservicemeshsetup/blob/main/README.images/Picture2.png)
 
 ![Connecting to the K8s cluster](https://github.com/burningglass/registrationservicemeshsetup/blob/main/README.images/Picture3.png)
 
-### 4.3 Create the parent working folder (GCloud Shell environment):
+### 4.3 Create the parent working folder (GCloud Shell environment)
 
 `cd ~`<br/>
 `mkdir projects`<br/>
 `cd projects`
 
-### 4.4 Clone the Repo (from GitHub):
+### 4.4 Clone the Repo (from GitHub)
 
-`git clone <paste>` (i.e. URL copied to clipboard in 2.2)
+`git clone <paste>` (i.e. URL copied to clipboard in 1.2)
 
-### 4.5 Switch to project folder:
+### 4.5 Switch to project folder
 
 `cd cryptoservice`
 
-### 4.6 Enable Docker in GCloud:
+### 4.6 Enable Docker in GCloud
 
 `gcloud auth configure-docker`
 
@@ -229,11 +229,11 @@ Note. Deleting the image is also possible (as follows), but **don't** because it
 
 ## 5 Deploy Crytoservice to K8s (in GCloud)
 
-### 5.1 Reconnect to K8s context in GCloud:
+### 5.1 Reconnect to K8s context in GCloud
 
 ![Connecting to K8s context](https://github.com/burningglass/registrationservicemeshsetup/blob/main/README.images/Picture1.png)
 
-### 5.2 Reconnect to the K8s cluster:
+### 5.2 Reconnect to the K8s cluster
 
 ![Connecting to the K8s cluster](https://github.com/burningglass/registrationservicemeshsetup/blob/main/README.images/Picture2.png)
 
@@ -354,7 +354,7 @@ Override [PROJECT_ID] with specific GCloud project ID:
 
 {ESCAPE} then : then wq then {RETURN}
 
-### 5.11 Install Deployment.yaml to K8s (in GCloud):
+### 5.11 Install Deployment.yaml to K8s (in GCloud)
 
 `kubectl apply -f Deployment.yaml -n default`<br/>
 `kubectl get pods -n default`
@@ -363,7 +363,7 @@ Note. -n specifies the K8s namespace (it's optional)
 
 The Deployment will create an initial Pod (it will initially show 'ContainerCreating' state and eventually hit 'Running' state).
 
-### 5.12 Install Service.yaml to K8s (in GCloud):
+### 5.12 Install Service.yaml to K8s (in GCloud)
 
 `kubectl apply -f Service.yaml -n default` <br/>
 `kubectl get services -n default`
@@ -374,11 +374,11 @@ The Service will create a LoadBalancer (it will initially show '<pending>' state
 
 This LoadBalancer will direct all traffic into the Pod above
 
-### 5.13 Test the application hosted by K8s (in GCloud):
+### 5.13 Test the application hosted by K8s (in GCloud)
 
 `curl -G -i “http://external_ip_addr>/encrypt” -d "secret=5050" -d "message=hellothereworld"`
 
-### 5.14 Other K8s commands:
+### 5.14 Other K8s commands
 
 To get information about running Pods:
 
