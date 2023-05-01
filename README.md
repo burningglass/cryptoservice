@@ -15,7 +15,7 @@ Familiarity with this project will ease tackling the more advanced service proje
 
 ### 1.1 Create an empty Repo (in GitHub)
 
-Your repo can be Public or Private:
+This can be Private or Public:
 
 ![Repo set-up](README.images/Picture1.png)
 
@@ -33,7 +33,7 @@ On the local Desktop (using the Command Prompt):
 
 ### 1.4 Clone the repo
 
-`git clone <paste>` (i.e. URL copied into Clipboard from GitHub above)
+`git clone <paste>` (paste in the URL copied into Clipboard from GitHub above)
 
 ## 2 Write the code
 
@@ -57,7 +57,7 @@ Back in Terminal, install the package dependencies (i.e. initially installs just
 `npm config set registry https://registry.npmjs.org`</br>
 `npm install`
 
-### 2.3 Create the main script
+### 2.3 Develop the main script
 
 Now code the main script (index.js):
 
@@ -65,7 +65,7 @@ Now code the main script (index.js):
 
 ### 2.4 Run the service
 
-The following commands start this Node.js app (which is Javascript, therefore interpreted code when its end-points are invoked - on port 4000 in this case):
+The following commands start this Node.js application (which is Javascript, therefore interpreted code when its end-points are invoked - on port 4000 in this case):
 
 *In Windows*<br/>
 `set PORT=4000`<br/>
@@ -109,7 +109,7 @@ Under `%HOMEPATH%\projects\cryptoservice`:<br/>
 `git commit -m "Initial bulk (Crypto service) code upload"`<br/>
 `git push`<br/>
 
-## 4 Dockerize the app (in GCloud)
+## 4 Dockerize the application (in GCloud)
 
 ### 4.1 Connect to K8s context in GCloud
 
@@ -129,17 +129,13 @@ Under `%HOMEPATH%\projects\cryptoservice`:<br/>
 
 ### 4.4 Clone the Repo (from GitHub)
 
-`git clone <paste>` (i.e. URL copied to clipboard in 1.2)
+`git clone <paste>` (paste in the URL copied into Clipboard per section 1.2)
 
-### 4.5 Switch to project folder
-
-`cd cryptoservice`
-
-### 4.6 Enable Docker in GCloud
+### 4.5 Enable Docker in GCloud
 
 `gcloud auth configure-docker`
 
-### 4.7 Create and build the Dockerfile
+### 4.6 Create and build the Dockerfile
 
 If necessary, based on: 
 
@@ -149,17 +145,18 @@ The Docker build:
 
 `gcloud projects list` yields PROJECT_ID<br/>
 
+`cd cryptoservice`<br/>
 `docker build -t gcr.io/[PROJECT_ID]/cryptoservice:v1.0.0 .` builds the container image:
 
 ![Docker build](README.images/Picture8.png)
 
 ### 4.8 Check the local (Docker) Registry
 
-`docker image ls` reveals the newly-built image (above) showing its <image id>
+`docker image ls` reveals the newly-built image (above) showing its \<image id\>
 
 ### 4.9 Start and verify service in GCloud Shell
 
-The following command creates container <container name> "cryptoservicecontainer" and starts it:
+The following command creates and starts container <container name> "cryptoservicecontainer":
 
 `docker run -d -i -t -p:5000:8080 --name cryptoservicecontainer <image id>`<br/>
 
@@ -176,13 +173,13 @@ Note. how this container (i.e. instance of the image) is:
 2. Shows the host and ports it is listening on
 3. Identified by the container name given
 
-It is also possible to check the app service's listening port using netstat:
+It is also possible to check the application service's listening port using netstat:
 
 `netstat -a | grep 5000` should yield one line showing it is outwardly listening
 
 ### 4.10 Terminal into container
 
-The following works...<br/>
+The following opens an terminal to the container:<br/>
 
 `docker exec -it <container name> /bin/bash`<br/>
 
@@ -194,11 +191,11 @@ pseudo-TTY: A device that has the functions of a physical terminal without actua
 
 Now inside this container's filesystem:<br/>
 
-`ls` reveals both folders of the base image (referenced by the Dockerfile) and the (app)service folder (the Dockerfile copied into the image): `/app`<br/>
+`ls` reveals both folders of the base image (the Dockerfile is based on) and the (application)service folder (which the Dockerfile copied into the image): `/app`<br/>
 
 `exit` exits out of this container
 
-### 4.11 Test app service
+### 4.11 Test the application service
 
 The following command...<br/>
 
@@ -241,11 +238,13 @@ Note. Deleting the image is also possible (as follows), but **don't** because it
 
 ### 5.3 Push the Docker image to Google Container Registry
 
-`docker push gcr.io/[PROJECT_ID]/cryptoservice:v1.0.0`
+First retrieve the PROJECT_ID: `gcloud projects list`
+
+Now `docker push gcr.io/[PROJECT_ID]/cryptoservice:v1.0.0` remembering to replace [PROJECT_ID] with the specific PROJECT_ID listed by the previous command
 
 ### 5.4 Verify the image is in the Registry
 
-`gcloud container images list --repository gcr.io/[PROJECT_ID]`<br/>
+`gcloud container images list --repository gcr.io/[PROJECT_ID]`<br/> remembering to replace [PROJECT_ID] with the specific PROJECT_ID (listed above)
 
 ![Checking the Registry](https://github.com/burningglass/cryptoservice/blob/main/README.images/Picture10.png)
 
@@ -279,13 +278,17 @@ To show all Pods running across all namespaces (including the 'reserved' ones si
 
 `kubectl get pods -A`
 
-Note. This sample uses the GCloud K8s Autopilot feature, hence Nodes (hosting the Pods) are automatically provisioned/ managed by the platform. In a regular cluster it is possible show information about Nodes with this command:
+Note. This sample uses the GCloud K8s Autopilot feature, hence Nodes (hosting the Pods) are automatically provisioned/ managed by the platform. However in a regular cluster it is possible show information about Nodes with this command:
 
 `kubectl get nodes`
 
 ### 5.6 Create the 'Deployment' configuration as .yaml
 
-Back in the desktop environment (/source code project), add this new file to the root of the cryptoservice project:
+Back in the desktop environment, create a file called Deployment.yaml in the cryptoservice project folder
+
+The complete example available in Github:
+
+[Deployment.yaml](Deployment.yaml)
 
 ```
 apiVersion: apps/v1
@@ -312,7 +315,11 @@ spec:
 
 ### 5.7 Create the 'Service' configuration as .yaml
 
-Back in the desktop environment (/source code project), add this new file to the root of the cryptoservice project:
+Also in the desktop environment, create a file called Service.yaml in cryptoservice project folder
+
+The complete example available in Github:
+
+[Service.yaml](Service.yaml)
 
 ```
 apiVersion: v1
@@ -336,23 +343,26 @@ spec:
 `git commit -m "Added K8s installation/config artefacts"`<br/>
 `git push`
 
-### 5.9 Git Pull the two files (above) into your GShell ~/projects/cryptoservice project folder
+### 5.9 Git Pull the two files (above) into the GShell ~/projects/cryptoservice working folder
 
 Now returning to GCloud GShell:
 
+`cd ~/projects/cryptoservice`<br/>
 `git pull`
 
-![Pull latest additions in GShell](https://github.com/burningglass/cryptoservice/blob/main/README.images/Picture12.png)
+![Git Pull](Picture12.png)
 
 ### 5.10 Modify Deployment.yaml to set container image source location
 
 `vi Deployment.yaml`
 
-Override [PROJECT_ID] with specific GCloud project ID:
+Now override [PROJECT_ID] with specific GCloud project ID
 
-![Setting the specific container image reference](https://github.com/burningglass/cryptoservice/blob/main/README.images/Picture13.png)
+Save the file:
 
 {ESCAPE} then : then wq then {RETURN}
+
+![Edit Deployment.yaml](Picture13.png)
 
 ### 5.11 Install Deployment.yaml to K8s (in GCloud)
 
@@ -370,7 +380,7 @@ The Deployment will create an initial Pod (it will initially show 'ContainerCrea
 
 Note. -n specifies the K8s namespace (it's optional)
 
-The Service will create a LoadBalancer (it will initially show '<pending>' state and eventually its (listening) EXTERNAL-IP)
+The Service will create a LoadBalancer (initially showing '\<pending\>' state and eventually (listening) EXTERNAL-IP)
 
 This LoadBalancer will direct all traffic into the Pod above
 
@@ -394,10 +404,10 @@ This assumes prerequisite steps were implemented (see https://github.com/burning
 
 i.e. The following command `kubectl get pod -n default` should reveal:
 
-![Pod is Anthos(Istio)-enabled, i.e. app and sidecar container both running](https://github.com/burningglass/cryptoservice/blob/main/README.images/Picture14.png)
+![Pod is Anthos(Istio)-enabled, i.e. application and sidecar container both running](https://github.com/burningglass/cryptoservice/blob/main/README.images/Picture14.png)
 
 '2/2' indicates two containers running inside the Pod:
-- the app
+- the application
 - the Anthos(Istio) sidecar
 
 ![Anthos(Istio) hooked into the cluster, the (labelled)namespace and it Deployments](https://github.com/burningglass/cryptoservice/blob/main/README.images/Picture15.png)
