@@ -350,7 +350,7 @@ Now returning to GCloud GShell:
 `cd ~/projects/cryptoservice`<br/>
 `git pull`
 
-![Git Pull](Picture12.png)
+![Git Pull](README.images/Picture12.png)
 
 ### 5.10 Modify Deployment.yaml to set container image source location
 
@@ -362,7 +362,7 @@ Save the file:
 
 {ESCAPE} then : then wq then {RETURN}
 
-![Edit Deployment.yaml](Picture13.png)
+![Edit Deployment.yaml](README.images/Picture13.png)
 
 ### 5.11 Install Deployment.yaml to K8s (in GCloud)
 
