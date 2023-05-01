@@ -143,18 +143,19 @@ If necessary, based on:
 
 The Docker build:
 
-`gcloud projects list` yields PROJECT_ID<br/>
+`cd cryptoservice`
 
-`cd cryptoservice`<br/>
-`docker build -t gcr.io/[PROJECT_ID]/cryptoservice:v1.0.0 .` builds the container image:
+`gcloud projects list` yields PROJECT_ID
+
+`docker build -t gcr.io/[PROJECT_ID]/cryptoservice:v1.0.0 .` builds the container image (remember to replace [PROJECT_ID] with the specific PROJECT_ID listed by the previous command)
 
 ![Docker build](README.images/Picture8.png)
 
-### 4.8 Check the local (Docker) Registry
+### 4.7 Check the local (Docker) Registry
 
 `docker image ls` reveals the newly-built image (above) showing its \<image id\>
 
-### 4.9 Start and verify service in GCloud Shell
+### 4.8 Start and verify service in GCloud Shell
 
 The following command creates and starts container <container name> "cryptoservicecontainer":
 
@@ -177,7 +178,7 @@ It is also possible to check the application service's listening port using nets
 
 `netstat -a | grep 5000` should yield one line showing it is outwardly listening
 
-### 4.10 Terminal into container
+### 4.9 Terminal into container
 
 The following opens an terminal to the container:<br/>
 
@@ -195,7 +196,7 @@ Now inside this container's filesystem:<br/>
 
 `exit` exits out of this container
 
-### 4.11 Test the application service
+### 4.10 Test the application service
 
 The following command...<br/>
 
@@ -205,7 +206,7 @@ The following command...<br/>
 
 ![Service working in GShell](README.images/Picture9.png)
 
-### 4.12 Clean up
+### 4.11 Clean up
 
 Not strictly necessary because GCloud Shell will clean up the workspace, but for learning purposes:<br/>
 
